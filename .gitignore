@@ -1,17 +1,6 @@
 /.pulumi/
 /.vscode/
 bin/
-node_modules/
 *.pyc
 .Python
-include/
-lib/
-yarn.lock
-kubeconfig
-kubeconfig.out
-package-lock.json
 Pulumi.*.yaml
-.idea/
-*.iml
-key.rsa*
-obj/

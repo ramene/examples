@@ -1,0 +1,8 @@
+name: kfp
+runtime: python
+description: AWS EKS + Kubeflow ML platform with Identity
+template:
+  config:
+    aws:region:
+      description: The AWS region to deploy into
+      default: us-east-1

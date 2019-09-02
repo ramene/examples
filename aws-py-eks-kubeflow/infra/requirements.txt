@@ -1,0 +1,3 @@
+pulumi
+pulumi_aws
+pulumi_kubernetes
