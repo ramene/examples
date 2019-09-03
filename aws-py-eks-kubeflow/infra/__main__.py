@@ -11,40 +11,23 @@ config = Config(None)
 vpc = ec2.Vpc('eks-kfp', 
     cidr_block='10.0.0.0/24', 
     tags={
-        'name' : 'value',
-        'name' : 'value'
+        'name' : 'pulumi-kubeflow-ml'
     }
 )
 
 sg = ec2.SecurityGroup('eks-kfp', 
-    vpc_id=vpc.id,
-    description="Allow all traffic and associate with our vpc",
-    ingress=
-    [
-        {
-            'from_port': 0,
-            'to_port': 0,
-            'protocol': '-1',
-            'cidr_blocks': ["0.0.0.0/0"]
-        }
-    ],
-    egress= 
-    [
-        {
-            'from_port': 0,
-            'to_port': 0,
-            'protocol': '-1',
-            'cidr_blocks': ["0.0.0.0/0"]
-        }
-    ]
+    vpc_id=vpc.id
+    description='Allow all traffic and associate with our vpc',
+    egress= [{'from_port': 0,'to_port': 0,'protocol': '-1','cidr_blocks': ["0.0.0.0/0"]}],
+    ingress=[{'from_port': 443,'to_port': 443,'protocol': 'tcp','cidr_blocks': ["0.0.0.0/0"]}]
 )
 
 kfp_cluster = eks.Cluster (
     'kfp',
     name='kfp',
-    role_arn='arn:aws:iam::00000987654321:role/name',
+    role_arn='',
     vpc_config={
-        'subnet_ids' : ['subnet-XXXXXXXX','subnet-XXXXXXXX'],
+        'subnet_ids' : ['subnet-00000000','subnet-00000000'],
         'security_group_ids': [sg.id]
     },
     enabled_cluster_log_types=['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
@@ -72,12 +55,13 @@ users:
   user:
     exec:
       apiVersion: client.authentication.k8s.io/v1alpha1
-      command: aws-iam-authenticator
+      command: aws
       args:
-        - "token"
-        - "-i"
+        - "eks"
+        - "get-token"
+        - "--cluster-name"
         - {3}
-        - "-r"
+        - "--role"
         - {4}
       env:
         - name: AWS_PROFILE

@@ -1,2 +1,2 @@
 import pulumi
-from pulumi_aws import * as aws
+from pulumi_aws import ec2, eks, iam

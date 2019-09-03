@@ -1,2 +1,2 @@
 import pulumi
-from pulumi_aws import * as aws
+from .baseline import *
