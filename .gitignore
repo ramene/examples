@@ -1,6 +1,8 @@
 /.pulumi/
 /.vscode/
 bin/
+docs/
 *.pyc
 .Python
+.github/FUNDING.yml
 Pulumi.*.yaml

@@ -270,3 +270,25 @@ After cloning this repo, from this working directory, run the following commands
     $ pulumi destroy --yes
     $ pulumi stack rm --yes
     ```
+
+
+- [ ] Using Custom Resources
+
+    ```py
+    import modules
+    a = modules.A()
+    b = modules.B()
+
+    a.spam()
+    b.foo()
+
+
+
+    import modules
+
+    a = modules.Oscar()
+    b = modules.Alchemic()
+
+    a.rasa_nlu()
+    b.transmutate()
+    ```

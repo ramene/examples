@@ -1,3 +1,4 @@
+*.sh
 *.pyc
 __pycache__
 kubeconfig
