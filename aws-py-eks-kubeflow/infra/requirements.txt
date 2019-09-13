@@ -1,3 +1,4 @@
-pulumi
-pulumi_aws
-pulumi_kubernetes
+pulumi>=1.0.0
+pulumi_random
+pulumi_aws>=1.0.0
+pulumi_kubernetes>=1.0.0
