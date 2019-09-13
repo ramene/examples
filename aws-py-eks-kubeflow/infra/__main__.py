@@ -1,11 +1,12 @@
+# import sys
 import pulumi
-from pulumi import Config, export, Output, ResourceOptions
-
-from pulumi_aws import ec2, eks, iam, cloudformation as cf
-from pulumi_random import RandomPassword
+# from ruamel.yaml import YAML
 from pulumi_kubernetes import Provider
+from pulumi_random import RandomPassword
+from pulumi import Config, export, Output, ResourceOptions
+from pulumi_aws import ec2, eks, iam, cloudformation as cfn
 from pulumi_kubernetes.apps.v1 import Deployment
-from pulumi_kubernetes.core.v1 import ConfigMap as cm, Pod, Service, Namespace
+from pulumi_kubernetes.core.v1 import ConfigMap, Pod, Service, Namespace
 
 # Read in configurable settings for our cluster:
 config = pulumi.Config(None)
@@ -221,7 +222,7 @@ subnet_list = subnet_info.apply(
 )
 
 # https://github.com/terraform-providers/terraform-provider-aws/blob/master/website/docs/r/cloudformation_stack.html.markdown
-kfp_worker_nodes = cf.Stack('kfp-worker-nodes', 
+kfp_worker_nodes = cfn.Stack('kfp-worker-nodes', 
     template_url=TEMPLATE_URL,
     name='kfp-worker-nodes',
     capabilities= 
@@ -245,32 +246,54 @@ kfp_worker_nodes = cf.Stack('kfp-worker-nodes',
     disable_rollback=True
 )
 
+# yaml_str = """\
+#   mapRoles: |
+#       username: system:node:{{EC2PrivateDNSName}}
+#       groups:
+#         - system:bootstrappers
+#         - system:nodes
+# """
+
+# yaml = YAML()
+# arn_data = yaml.load(yaml_str)
+# arn_data.insert(1, '- rolearn', kfp_worker_nodes.outputs.__getitem__('NodeInstanceRole'), comment="new key")
+# # yaml.dump(f"arn_data", sys.stdout)
+
+# configMap = ConfigMap('configMap', 
+#     data=arn_data,
+#     metadata={
+#         'name' : 'aws-auth',
+#         'namespace' : 'kube-system'
+#     },
+#     opts=ResourceOptions(parent=kfp_cluster, depends_on=[kfp_cluster])
+# )
+
 labels = {"app": "nginx"}
 
 # Create a canary deployment to test that this cluster works.
-nginx = Deployment(
-    "k8s-nginx",
-    spec={
-        "selector": {"matchLabels": labels},
-        "replicas": 1,
-        "template": {
-            "metadata": {"labels": labels},
-            "spec": {"containers": [{"name": "nginx", "image": "nginx"}]},
-        },
-    },
-    __opts__=ResourceOptions(parent=k8s_provider, provider=k8s_provider),
-)
+# nginx = Deployment(
+#     "k8s-nginx",
+#     spec={
+#         "selector": {"matchLabels": labels},
+#         "replicas": 1,
+#         "template": {
+#             "metadata": {"labels": labels},
+#             "spec": {"containers": [{"name": "nginx", "image": "nginx"}]},
+#         },
+#     },
+#     __opts__=ResourceOptions(parent=k8s_provider, provider=k8s_provider),
+# )
 
-ingress = Service(
-    "k8s-nginx",
-    spec={"type": "LoadBalancer", "selector": labels, "ports": [{"port": 80}]},
-    __opts__=ResourceOptions(parent=k8s_provider, provider=k8s_provider),
-)
+# ingress = Service(
+#     "k8s-nginx",
+#     spec={"type": "LoadBalancer", "selector": labels, "ports": [{"port": 80}]},
+#     __opts__=ResourceOptions(parent=k8s_provider, provider=k8s_provider),
+# )
 
 pulumi.export('kubeconfig', k8s_config)
 pulumi.export('cluster_id', kfp_cluster.id)
 pulumi.export('endpoint', kfp_cluster.endpoint)
 pulumi.export('role_arn', kfp_cluster.role_arn)
-pulumi.export('hostname', Output.all(ingress.status['load_balancer']['ingress'][0]['hostname']))
+# pulumi.export('hostname', Output.all(ingress.status['load_balancer']['ingress'][0]['hostname']))
 pulumi.export('NodeInstanceRole', kfp_worker_nodes.outputs.__getitem__('NodeInstanceRole'))
 pulumi.export('NodeSecurityGroup', kfp_worker_nodes.outputs.__getitem__('NodeSecurityGroup'))
