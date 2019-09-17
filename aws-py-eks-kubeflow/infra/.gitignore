@@ -1,6 +1,5 @@
 *.sh
+*.pem
 *.pyc
 __pycache__
 kubeconfig
-aws-*.yaml
-*.pem
