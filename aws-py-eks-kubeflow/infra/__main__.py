@@ -1,6 +1,5 @@
 # import sys
 import pulumi
-# from ruamel.yaml import YAML
 from pulumi_kubernetes import Provider
 from pulumi_random import RandomPassword
 from pulumi import Config, export, Output, ResourceOptions
@@ -8,7 +7,7 @@ from pulumi_aws import ec2, eks, iam, cloudformation as cfn
 from pulumi_kubernetes.apps.v1 import Deployment
 from pulumi_kubernetes.core.v1 import ConfigMap, Pod, Service, Namespace
 
-# Read in configurable settings for our cluster:
+# TODO(@critical): Read in configurable settings for our cluster use backticks for `code`
 config = pulumi.Config(None)
 
 # PREFIX = config.require("prefix") or ''
@@ -245,28 +244,6 @@ kfp_worker_nodes = cfn.Stack('kfp-worker-nodes',
     # on_failure='ROLLBACK',
     disable_rollback=True
 )
-
-# yaml_str = """\
-#   mapRoles: |
-#       username: system:node:{{EC2PrivateDNSName}}
-#       groups:
-#         - system:bootstrappers
-#         - system:nodes
-# """
-
-# yaml = YAML()
-# arn_data = yaml.load(yaml_str)
-# arn_data.insert(1, '- rolearn', kfp_worker_nodes.outputs.__getitem__('NodeInstanceRole'), comment="new key")
-# # yaml.dump(f"arn_data", sys.stdout)
-
-# configMap = ConfigMap('configMap', 
-#     data=arn_data,
-#     metadata={
-#         'name' : 'aws-auth',
-#         'namespace' : 'kube-system'
-#     },
-#     opts=ResourceOptions(parent=kfp_cluster, depends_on=[kfp_cluster])
-# )
 
 labels = {"app": "nginx"}
 
